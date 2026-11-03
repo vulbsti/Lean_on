@@ -1,0 +1,22 @@
+{
+  "name": "listening-state-map",
+  "version": "0.1.0",
+  "description": "An interactive map of how a track at a given volume moves your energy and tension from where you start, with Spotify sync, Claude-estimated track profiles, and a log that calibrates the model to you.",
+  "author": {
+    "name": "Utkarsh Gupta",
+    "url": "https://github.com/vulbsti"
+  },
+  "homepage": "https://github.com/vulbsti/Lean_on/tree/main/plugins/listening-state-map",
+  "repository": "https://github.com/vulbsti/Lean_on",
+  "license": "MIT",
+  "keywords": [
+    "music",
+    "focus",
+    "mood",
+    "volume",
+    "spotify",
+    "self-experiment",
+    "artifact"
+  ],
+  "icon": ".claude-plugin/icon.png"
+}

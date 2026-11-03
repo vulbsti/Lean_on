@@ -1,0 +1,26 @@
+{
+  "name": "lean-on",
+  "owner": {
+    "name": "Utkarsh Gupta",
+    "url": "https://github.com/vulbsti"
+  },
+  "metadata": {
+    "description": "Utkarsh's Claude plugins.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "listening-state-map",
+      "source": "./plugins/listening-state-map",
+      "description": "Map how a track at a given volume moves your energy and tension, sync your Spotify library, and log what actually happened to calibrate the model.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "keywords": [
+        "music",
+        "focus",
+        "mood",
+        "spotify"
+      ]
+    }
+  ]
+}

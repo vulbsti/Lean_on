@@ -1,0 +1,655 @@
+<title>Listening State Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one working instrument. State map in the centre, "where you start" on the left, "what you play" on the right, analysis and logs below. */
+:root{
+  --bg:#eef0f3; --panel:#f8f9fb; --line:#d5d9e0; --fg:#171b24; --muted:#5b6475;
+  --accent:#2c49c9; --energy:#c26a12; --tension:#c0364a; --calm:#2f8a6b; --absorb:#7a52c7;
+  --zone:rgba(44,73,201,.10); --zoneLine:rgba(44,73,201,.55); --grid:rgba(23,27,36,.07);
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151b; --panel:#1a1e26; --line:#2c3240; --fg:#e7eaf0; --muted:#98a1b3;
+  --accent:#7d93ff; --energy:#f0a347; --tension:#ff6f80; --calm:#55c79f; --absorb:#b293ff;
+  --zone:rgba(125,147,255,.12); --zoneLine:rgba(125,147,255,.6); --grid:rgba(231,234,240,.07); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151b; --panel:#1a1e26; --line:#2c3240; --fg:#e7eaf0; --muted:#98a1b3;
+  --accent:#7d93ff; --energy:#f0a347; --tension:#ff6f80; --calm:#55c79f; --absorb:#b293ff;
+  --zone:rgba(125,147,255,.12); --zoneLine:rgba(125,147,255,.6); --grid:rgba(231,234,240,.07); color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.2vw,34px);letter-spacing:-.01em;margin:0;line-height:1.1;text-wrap:balance}
+.sub{color:var(--muted);max-width:62ch;margin:4px 0 0}
+h2{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 10px;letter-spacing:.005em}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:270px minmax(0,1fr) 330px;gap:16px;align-items:start}
+@media (max-width:1100px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.mapcol{grid-column:1/-1;order:-1}}
+@media (max-width:680px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:500 13px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:6px 11px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=text],input[type=number],select{font:13px var(--body);background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0}
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-bottom:10px}
+.slider label{font-size:13px}
+.slider output{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.slider input{grid-column:1/-1}
+.slider .ends{grid-column:1/-1;display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:-4px}
+.goals{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.goals button{text-align:left;padding:8px 10px;line-height:1.25}
+.goals button small{display:block;color:var(--muted);font-size:11px;font-weight:400}
+.goals button[aria-pressed=true]{border-color:var(--accent);background:var(--zone)}
+.mapbox{position:relative}
+svg#map{width:100%;height:auto;display:block;touch-action:none;user-select:none}
+.verdict{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-top:8px}
+.pill{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.good{color:var(--calm)} .pill.near{color:var(--energy)} .pill.off{color:var(--tension)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.why{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:110px minmax(0,1fr) 34px;gap:8px;align-items:center;font-size:13px}
+.bar .track{height:7px;background:var(--grid);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;border-radius:4px;transition:width .2s}
+.bar span:last-child{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.why p{margin:0 0 2px;font-size:12.5px;color:var(--muted)}
+.tracklist{max-height:330px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.titem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:7px 10px;border-bottom:1px solid var(--line);cursor:pointer;width:100%;text-align:left;border-radius:0;border-left:0;border-right:0;border-top:0;background:transparent}
+.titem:last-child{border-bottom:0}
+.titem[aria-selected=true]{background:var(--zone)}
+.titem b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.titem small{color:var(--muted);grid-column:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.titem .tag{grid-row:1/3;grid-column:2;align-self:center;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.feat .slider{margin-bottom:4px}
+.note{font-size:12px;color:var(--muted);margin:6px 0 0}
+.status{font-size:12.5px;color:var(--muted);min-height:1.3em}
+.status.err{color:var(--tension)}
+.below{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin-top:16px}
+@media (max-width:900px){.below{grid-template-columns:minmax(0,1fr)}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:6px 6px;border-bottom:1px solid var(--line)}
+td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--zone)}
+.scroll{overflow-x:auto}
+.seq{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.seq div{display:grid;grid-template-columns:22px minmax(0,1fr);gap:6px}
+.seq span.n{font-family:var(--mono);color:var(--muted)}
+details summary{cursor:pointer;font-weight:500}
+.knobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:4px 16px;margin-top:10px}
+.pls{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto}
+.pl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+.pl small{color:var(--muted);grid-column:1/-1}
+a{color:var(--accent)}
+.safety{font-size:12px;margin-top:6px}
+.safety.warn{color:var(--tension)}
+.search{display:flex;gap:6px;margin-top:8px} .search input{flex:1}
+.results{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.results button{text-align:left;font-weight:400}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <h1>Listening State Map</h1>
+    <p class="sub">Where you are now is the dot. A track at a volume is an arrow. The arrow shows where that combination is likely to move you, and why.</p>
+  </div>
+  <div class="row">
+    <button id="syncBtn" class="primary">Sync from Spotify</button>
+    <span id="syncStatus" class="status"></span>
+  </div>
+</header>
+
+<div class="grid">
+  <!-- LEFT: starting state + goal -->
+  <section class="stack">
+    <div class="panel">
+      <h2>Where you are now</h2>
+      <div class="slider"><label for="startE">Energy</label><output id="startEo"></output>
+        <input id="startE" type="range" min="0" max="100" value="25"><div class="ends"><span>drained</span><span>charged</span></div></div>
+      <div class="slider"><label for="startT">Tension</label><output id="startTo"></output>
+        <input id="startT" type="range" min="0" max="100" value="60"><div class="ends"><span>calm</span><span>wired</span></div></div>
+      <p class="note">Or drag the dot on the map. Rate honestly: a stressed, foggy evening is low energy and high tension.</p>
+    </div>
+    <div class="panel">
+      <h2>What you want</h2>
+      <div class="goals" id="goals"></div>
+    </div>
+    <div class="panel">
+      <h2>Your playlists</h2>
+      <div id="playlists" class="pls"></div>
+      <p class="note">Spotify's connector gives playlist names and cover art, but not the track list. Tracks are matched to a playlist when their album cover appears in the playlist's cover mosaic, which is a partial match. Add tracks with search to fill the rest in.</p>
+    </div>
+  </section>
+
+  <!-- CENTRE: map -->
+  <section class="panel mapcol">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">State map</h2>
+      <span class="label" id="mapCaption"></span>
+    </div>
+    <div class="mapbox"><svg id="map" viewBox="0 0 560 520" role="img" aria-label="Energy and tension map"></svg></div>
+    <div class="verdict"><span id="verdictPill" class="pill"></span><span id="verdictText"></span></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>this track, this volume</span>
+      <span><i style="background:var(--muted)"></i>same track at volume 1 to 10</span>
+      <span><i style="background:var(--absorb);height:8px;width:8px;border-radius:50%"></i>halo = absorption</span>
+      <span><i style="background:var(--calm)"></i>what you actually logged</span>
+    </div>
+  </section>
+
+  <!-- RIGHT: track + volume + why -->
+  <section class="stack">
+    <div class="panel">
+      <h2>What you play</h2>
+      <div class="row" style="margin-bottom:8px">
+        <select id="filter" aria-label="Filter tracks" style="flex:1"></select>
+      </div>
+      <div class="tracklist" id="tracklist" role="listbox" aria-label="Tracks"></div>
+      <div class="search"><input id="q" type="text" placeholder="Search Spotify to add a track" aria-label="Search Spotify"><button id="qBtn">Search</button></div>
+      <div class="results" id="results"></div>
+    </div>
+    <div class="panel">
+      <div class="slider"><label for="vol">Volume (device step)</label><output id="volo"></output>
+        <input id="vol" type="range" min="1" max="10" value="3"><div class="ends"><span>barely there</span><span>max</span></div></div>
+      <div id="safety" class="safety"></div>
+    </div>
+    <div class="panel">
+      <h2>Why the arrow points there</h2>
+      <div class="why" id="why"></div>
+    </div>
+  </section>
+</div>
+
+<div class="below">
+  <section class="stack">
+    <div class="panel">
+      <h2>Best from your library for this state</h2>
+      <p class="note" style="margin:0 0 8px">Every track is tried at every volume from 1 to 10. Each row is the volume where it lands closest to your goal. Click a row to load it.</p>
+      <div class="scroll"><table><thead><tr><th>Track</th><th>Vol</th><th>Lands</th><th>Main reason</th></tr></thead><tbody id="ranking"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h2>If no single track gets you there</h2>
+      <div id="sequence" class="seq"></div>
+    </div>
+  </section>
+  <section class="stack">
+    <div class="panel">
+      <h2>Track profile</h2>
+      <p class="note" style="margin:0 0 8px" id="featSource"></p>
+      <div class="feat" id="feat"></div>
+      <div class="row" style="margin-top:8px"><button id="estBtn">Re-estimate with Claude</button><span id="estStatus" class="status"></span></div>
+    </div>
+    <div class="panel">
+      <h2>Log what actually happened</h2>
+      <p class="note" style="margin:0 0 8px">After 10 to 15 minutes, rate where you landed. Uses the start point, track and volume above.</p>
+      <div class="slider"><label for="endE">Energy now</label><output id="endEo"></output><input id="endE" type="range" min="0" max="100" value="50"></div>
+      <div class="slider"><label for="endT">Tension now</label><output id="endTo"></output><input id="endT" type="range" min="0" max="100" value="40"></div>
+      <div class="slider"><label for="focus">Focus or depth achieved</label><output id="focuso"></output><input id="focus" type="range" min="1" max="5" value="3"></div>
+      <div class="row"><button id="logBtn" class="primary">Save log</button><span id="logStatus" class="status"></span></div>
+      <div class="scroll" style="margin-top:10px"><table><thead><tr><th>When</th><th>Track</th><th>Vol</th><th>Predicted vs actual</th></tr></thead><tbody id="logs"></tbody></table></div>
+      <p class="note" id="calib"></p>
+    </div>
+    <div class="panel">
+      <details>
+        <summary>Model assumptions (adjustable)</summary>
+        <p class="note">These are hypotheses, not measurements. Tune them until predicted arrows match your logged ones.</p>
+        <div class="knobs" id="knobs"></div>
+        <div class="row" style="margin-top:8px"><button id="saveKnobs">Save assumptions</button><button id="resetKnobs">Reset</button><span id="knobStatus" class="status"></span></div>
+      </details>
+    </div>
+  </section>
+</div>
+</div>
+
+<script>
+(() => {
+// ---------- constants ----------
+const GOALS = {
+  focus:   {name:"Deep focus",        hint:"reading, coding, thinking", E:[.45,.72], T:[.12,.42], capturePenalty:.45},
+  execute: {name:"Fast execution",    hint:"routine work, sprints",      E:[.62,.88], T:[.25,.55], capturePenalty:.25},
+  create:  {name:"Loose and creative",hint:"ideas, synthesis",           E:[.3,.55],  T:[0,.3],    capturePenalty:.2},
+  dream:   {name:"Dreamy reset",      hint:"absorption, decompress",     E:[.12,.42], T:[0,.25],   capturePenalty:0, needAbsorb:true}
+};
+const DEFAULT_K = {pull:.75, isoWidth:.55, tPull:.7, load:.3, irritate:.25, bassLift:.15};
+const KNOB_INFO = {
+  pull:["Energy pull","How strongly music drags your energy toward its own level"],
+  isoWidth:["Matching window","How far the music can be from your energy and still entrain you"],
+  tPull:["Tension pull","How strongly music drags your tension toward its own"],
+  load:["Loudness load","Extra tension from loud, dense, sharp sound"],
+  irritate:["Mismatch irritation","Tension from music far from your state"],
+  bassLift:["Bass lift","Energy added by felt bass with sharp attacks"]
+};
+const FEATS = [
+  ["bpm","Tempo",50,180,1,"bpm"],["attack","Sharp hits",0,1,.05,""],["density","Density",0,1,.05,""],
+  ["harshness","Harshness",0,1,.05,""],["unpredictability","Sudden swings",0,1,.05,""],
+  ["bass","Bass weight",0,1,.05,""],["lyrics","Clear lyrics",0,1,.05,""],["familiarity","Familiarity",0,1,.05,""]
+];
+const clamp = (x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const smooth = (a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
+const $ = id=>document.getElementById(id);
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const COVER_RE = /ab67616d0000(?:b273|1e02|4851)([0-9a-f]{24})/g;
+const albumKeysOf = url=>{const out=[];let m;COVER_RE.lastIndex=0;while((m=COVER_RE.exec(url||"")))out.push(m[1]);return out};
+
+// ---------- state ----------
+const S = {start:{E:.25,T:.6}, goal:"focus", vol:3, tracks:{}, playlists:{}, logs:[], selected:null, filter:"all", K:{...DEFAULT_K}, settings:{maxDb:100, stepDb:4}};
+let db=null, mcp=null, sample=null;
+
+// ---------- model ----------
+function model(f, step, start, K=S.K){
+  const v = step/10;
+  const tempo = clamp((f.bpm-50)/130);
+  const D = clamp(.5*tempo + .3*f.attack + .2*f.density);              // the music's own energy level
+  const bassEff = f.bass*smooth(.45,.9,v);                                // bass is lost at low volume (equal-loudness)
+  const harshEff = f.harshness*(.3+.7*v);                                 // harsh treble also fades when quiet
+  const Tm = clamp(.65*harshEff + .35*f.unpredictability*(.4+.6*v) + .15*bassEff*f.attack); // the music's own tension level
+  const gap = Math.abs(D-start.E);
+  const match = Math.exp(-((gap/K.isoWidth)**2));                         // entrainment only works near your state
+  const sE = K.pull*(.35+.65*v)*(.35+.65*match);
+  const lift = K.bassLift*bassEff*f.attack;
+  const dE = sE*(D-start.E) + lift;
+  const sT = K.tPull*(.1+.6*v);
+  const loud = Math.max(0,v-.5);
+  const load = K.load*4*loud*loud*(.7*f.attack+.3*f.density)*(.5+start.T); // already tense = more sensitive
+  const irritation = K.irritate*(1-match)*v;
+  const dT = sT*(Tm-start.T) + load + irritation;
+  const mask = Math.pow(v,1.2);
+  const capture = clamp(f.lyrics*(.3+.7*v) + .5*f.unpredictability*v);
+  const absorb = clamp(mask*(.55*(1-f.attack)+.25*bassEff+.2*(1-tempo))*(1-.5*f.lyrics));
+  const end = {E:clamp(start.E+dE), T:clamp(start.T+dT)};
+  return {end, D, Tm, match, drive:sE*(D-start.E)+lift, calmOrTense:sT*(Tm-start.T), load, irritation, mask, capture, absorb, bassEff, harshEff};
+}
+function zoneDist(p, g){
+  const dx = p.E<g.E[0]?g.E[0]-p.E:p.E>g.E[1]?p.E-g.E[1]:0;
+  const dy = p.T<g.T[0]?g.T[0]-p.T:p.T>g.T[1]?p.T-g.T[1]:0;
+  return Math.hypot(dx,dy);
+}
+function cost(r, step, goalKey){
+  const g = GOALS[goalKey];
+  let c = zoneDist(r.end,g) + g.capturePenalty*r.capture*.35;
+  if(g.needAbsorb) c += (1-r.absorb)*.3;
+  if(step>=9) c += .03;
+  return c;
+}
+function verdictOf(r, step, goalKey){
+  const g=GOALS[goalKey]; const d=zoneDist(r.end,g);
+  if(d===0 && !(g.needAbsorb && r.absorb<.4)) return ["good","Lands in the zone"];
+  if(d<.1) return ["near","Lands near the zone"];
+  return ["off","Misses the zone"];
+}
+
+// ---------- map ----------
+const W=560,H=520,PL=54,PR=18,PT=18,PB=46, IW=W-PL-PR, IH=H-PT-PB;
+const X = e=>PL+e*IW, Y = t=>PT+(1-t)*IH;
+const svg = $("map");
+function drawMap(){
+  const tr = S.tracks[S.selected];
+  const g = GOALS[S.goal];
+  let s = `<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--calm)"/></marker></defs>`;
+  s += `<rect x="${PL}" y="${PT}" width="${IW}" height="${IH}" fill="var(--bg)" stroke="var(--line)"/>`;
+  for(let i=1;i<4;i++){s+=`<line x1="${X(i/4)}" y1="${PT}" x2="${X(i/4)}" y2="${PT+IH}" stroke="var(--grid)"/><line x1="${PL}" y1="${Y(i/4)}" x2="${PL+IW}" y2="${Y(i/4)}" stroke="var(--grid)"/>`}
+  // other goals faint, selected strong
+  for(const [k,z] of Object.entries(GOALS)){
+    const on = k===S.goal;
+    s += `<rect x="${X(z.E[0])}" y="${Y(z.T[1])}" width="${X(z.E[1])-X(z.E[0])}" height="${Y(z.T[0])-Y(z.T[1])}" rx="8" fill="${on?'var(--zone)':'none'}" stroke="var(--zoneLine)" stroke-opacity="${on?1:.3}" stroke-dasharray="${on?'':'4 4'}"/>`;
+    s += `<text x="${X(z.E[0])+6}" y="${Y(z.T[1])+15}" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--accent)" fill-opacity="${on?1:.55}">${z.name}</text>`;
+  }
+  // quadrant labels
+  const q=(x,y,a,txt)=>`<text x="${x}" y="${y}" text-anchor="${a}" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--muted)">${txt}</text>`;
+  s+=q(PL+8,PT+IH-10,"start","calm and drowsy")+q(PL+IW-8,PT+IH-10,"end","calm and charged")+q(PL+8,PT+30,"start","tense and drained")+q(PL+IW-8,PT+30,"end","wired");
+  // axes
+  s+=`<text x="${PL+IW/2}" y="${H-12}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">ENERGY → </text>`;
+  s+=`<text transform="translate(16 ${PT+IH/2}) rotate(-90)" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--muted)">TENSION → </text>`;
+  s+=`<text x="${PL}" y="${H-28}" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">drained</text><text x="${PL+IW}" y="${H-28}" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">charged</text>`;
+  if(tr && tr.features){
+    // logged real arrows for this track
+    for(const l of S.logs.filter(l=>l.trackId===S.selected)){
+      s+=`<line x1="${X(l.start.E)}" y1="${Y(l.start.T)}" x2="${X(l.end.E)}" y2="${Y(l.end.T)}" stroke="var(--calm)" stroke-width="2" stroke-opacity=".8" marker-end="url(#ahg)"/>`;
+    }
+    // volume sweep
+    const pts=[]; for(let st=1;st<=10;st++){pts.push(model(tr.features,st,S.start).end)}
+    s+=`<polyline points="${pts.map(p=>X(p.E)+","+Y(p.T)).join(" ")}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    pts.forEach((p,i)=>{const st=i+1;s+=`<circle cx="${X(p.E)}" cy="${Y(p.T)}" r="${st===S.vol?0:2.6}" fill="var(--muted)"/>`;
+      if(st===1||st===5||st===10) s+=`<text x="${X(p.E)+6}" y="${Y(p.T)-6}" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">vol ${st}</text>`});
+    const r = model(tr.features,S.vol,S.start);
+    s+=`<circle cx="${X(r.end.E)}" cy="${Y(r.end.T)}" r="${6+r.absorb*34}" fill="var(--absorb)" fill-opacity="${.08+r.absorb*.22}"/>`;
+    s+=`<line x1="${X(S.start.E)}" y1="${Y(S.start.T)}" x2="${X(r.end.E)}" y2="${Y(r.end.T)}" stroke="var(--accent)" stroke-width="3" marker-end="url(#ah)"/>`;
+    s+=`<circle cx="${X(r.end.E)}" cy="${Y(r.end.T)}" r="4" fill="var(--accent)"/>`;
+  }
+  s+=`<circle id="startDot" cx="${X(S.start.E)}" cy="${Y(S.start.T)}" r="10" fill="var(--panel)" stroke="var(--fg)" stroke-width="2.5" style="cursor:grab"/>`;
+  s+=`<text x="${X(S.start.E)}" y="${Y(S.start.T)-15}" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11.5" font-weight="600" fill="var(--fg)">you now</text>`;
+  svg.innerHTML=s;
+  $("mapCaption").textContent = tr ? `${tr.name} · vol ${S.vol}` : "pick a track";
+}
+// dragging the dot
+let dragging=false;
+function svgPoint(ev){const r=svg.getBoundingClientRect();const sx=(ev.clientX-r.left)/r.width*W, sy=(ev.clientY-r.top)/r.height*H;return {E:clamp((sx-PL)/IW),T:clamp(1-(sy-PT)/IH)}}
+svg.addEventListener("pointerdown",ev=>{if(ev.target.id!=="startDot")return;dragging=true;svg.setPointerCapture(ev.pointerId)});
+svg.addEventListener("pointermove",ev=>{if(!dragging)return;const p=svgPoint(ev);S.start=p;$("startE").value=Math.round(p.E*100);$("startT").value=Math.round(p.T*100);renderAll(false)});
+svg.addEventListener("pointerup",()=>{if(dragging){dragging=false;renderAll(true)}});
+
+// ---------- panels ----------
+function renderGoals(){
+  $("goals").innerHTML = Object.entries(GOALS).map(([k,g])=>`<button data-g="${k}" aria-pressed="${k===S.goal}">${g.name}<small>${g.hint}</small></button>`).join("");
+}
+$("goals").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.goal=b.dataset.g;renderGoals();renderAll(true)});
+
+function trackPlaylists(t){
+  const keys=new Set([t.albumKey].filter(Boolean));
+  const out=new Set(t.playlists||[]);
+  for(const p of Object.values(S.playlists)){ if((p.albumKeys||[]).some(k=>keys.has(k))) out.add(p.id) }
+  return [...out];
+}
+function renderFilter(){
+  const sel=$("filter"); const prev=S.filter;
+  const opts=[["all","All tracks"],["top","Most played"],["recent","Recently played"],["added","Added by you"]];
+  for(const p of Object.values(S.playlists)){const n=Object.values(S.tracks).filter(t=>trackPlaylists(t).includes(p.id)).length;if(n)opts.push(["pl:"+p.id,`Playlist: ${p.name} (${n})`])}
+  sel.innerHTML=opts.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  sel.value = opts.some(o=>o[0]===prev)?prev:"all"; S.filter=sel.value;
+}
+$("filter").addEventListener("change",e=>{S.filter=e.target.value;renderTracks()});
+function visibleTracks(){
+  let list=Object.values(S.tracks);
+  if(S.filter.startsWith("pl:")){const id=S.filter.slice(3);list=list.filter(t=>trackPlaylists(t).includes(id))}
+  else if(S.filter!=="all") list=list.filter(t=>(t.sources||[]).includes(S.filter));
+  return list.sort((a,b)=>a.name.localeCompare(b.name));
+}
+function renderTracks(){
+  const list=visibleTracks();
+  if(!list.length){$("tracklist").innerHTML=`<p class="note" style="padding:10px">No tracks yet. Press "Sync from Spotify" or search to add one.</p>`;return}
+  $("tracklist").innerHTML=list.map(t=>`<button class="titem" role="option" data-id="${esc(t.id)}" aria-selected="${t.id===S.selected}"><b>${esc(t.name)}</b><small>${esc(t.artist)}</small><span class="tag">${t.features?Math.round(t.features.bpm)+" bpm":"no profile"}</span></button>`).join("");
+}
+$("tracklist").addEventListener("click",e=>{const b=e.target.closest(".titem");if(!b)return;selectTrack(b.dataset.id)});
+function selectTrack(id){S.selected=id;renderTracks();renderFeat();renderAll(true)}
+
+function renderPlaylists(){
+  const ps=Object.values(S.playlists).sort((a,b)=>(b.own?1:0)-(a.own?1:0)||a.name.localeCompare(b.name));
+  if(!ps.length){$("playlists").innerHTML=`<p class="note">Sync from Spotify to list your playlists.</p>`;return}
+  $("playlists").innerHTML=ps.map(p=>{
+    const ts=Object.values(S.tracks).filter(t=>t.features&&trackPlaylists(t).includes(p.id));
+    let sig="no matched tracks yet";
+    if(ts.length){
+      const avg=k=>ts.reduce((a,t)=>a+model(t.features,S.vol,S.start)[k],0)/ts.length;
+      const E=ts.reduce((a,t)=>a+model(t.features,S.vol,S.start).end.E,0)/ts.length;
+      const T=ts.reduce((a,t)=>a+model(t.features,S.vol,S.start).end.T,0)/ts.length;
+      const dE=E-S.start.E, dT=T-S.start.T;
+      sig=`${ts.length} matched · at vol ${S.vol}: energy ${dE>=0?"+":""}${Math.round(dE*100)}, tension ${dT>=0?"+":""}${Math.round(dT*100)}, absorption ${Math.round(avg("absorb")*100)}%`;
+    }
+    return `<div class="pl"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><span class="label">${p.own?"yours":"saved"}</span><small>${sig}</small></div>`;
+  }).join("");
+}
+
+function renderSafety(){
+  const dB = S.settings.maxDb - S.settings.stepDb*(10-S.vol);
+  const mins = 480/Math.pow(2,(dB-85)/3);
+  const t = mins>=480?"no daily limit":mins>=60?`about ${Math.round(mins/60*10)/10} h a day`:`about ${Math.max(1,Math.round(mins))} min a day`;
+  $("safety").className="safety"+(dB>=88?" warn":"");
+  $("safety").innerHTML=`Roughly ${Math.round(dB)} dB on headphones (assumes max ≈ ${S.settings.maxDb} dB, ${S.settings.stepDb} dB per step). Safe exposure: ${t}. <button id="calBtn" style="padding:1px 7px;font-size:11px">Calibrate</button>`;
+}
+document.addEventListener("click",e=>{if(e.target.id!=="calBtn")return;
+  const box=document.createElement("div");box.className="row";box.style.marginTop="6px";
+  box.innerHTML=`<label class="note">Max volume dB <input id="calMax" type="number" value="${S.settings.maxDb}" style="width:64px"></label><label class="note">dB per step <input id="calStep" type="number" step=".5" value="${S.settings.stepDb}" style="width:56px"></label><button id="calSave">Save</button>`;
+  e.target.replaceWith(box)});
+document.addEventListener("click",async e=>{if(e.target.id!=="calSave")return;
+  S.settings.maxDb=Number($("calMax").value)||100;S.settings.stepDb=Number($("calStep").value)||4;renderSafety();
+  if(db) try{await db.doc("settings/model").set({K:S.K,settings:S.settings})}catch{}});
+
+function bar(label,val,color,signed){
+  const w = signed? Math.min(50,Math.abs(val)*100) : Math.round(clamp(val)*100);
+  const fillStyle = signed? `margin-left:${val<0?50-w:50}%;width:${w}%` : `width:${w}%`;
+  const num = signed? (val>=0?"+":"")+Math.round(val*100) : Math.round(val*100)+"%";
+  return `<div class="bar"><span>${label}</span><div class="track"><div class="fill" style="${fillStyle};background:${color}"></div></div><span>${num}</span></div>`;
+}
+function renderWhy(){
+  const tr=S.tracks[S.selected];
+  if(!tr||!tr.features){$("why").innerHTML=`<p>Pick a track with a profile to see the breakdown.</p>`;return}
+  const f=tr.features, r=model(f,S.vol,S.start);
+  const lines=[];
+  lines.push(bar("Energy push",r.drive,"var(--energy)",true));
+  lines.push(`<p>${r.D>S.start.E?"The track runs hotter than you":"The track runs cooler than you"} (its drive ${Math.round(r.D*100)} vs your ${Math.round(S.start.E*100)}). ${r.match<.5?"The gap is wide, so entrainment is weak and the pull is reduced.":"The gap is close enough for your rhythm to lock on."}</p>`);
+  lines.push(bar("Tension pull",r.calmOrTense,"var(--tension)",true));
+  lines.push(`<p>${S.vol<=4&&f.harshness>.4?"At this volume the harsh upper treble and sub-bass drop out, so the track carries less aggression than its genre suggests. ":""}${r.calmOrTense<0?"It pulls tension down toward its own calmer level.":"It pulls tension up toward its own edgier level."}</p>`);
+  lines.push(bar("Loudness load",r.load+r.irritation,"var(--tension)",false));
+  if(r.load+r.irritation>.05) lines.push(`<p>${r.load>r.irritation?"Loud, dense, sharp sound adds tension, more so because you start tense.":"The track is far from your state, which tends to irritate rather than move you."}</p>`);
+  lines.push(bar("Masking",r.mask,"var(--accent)",false));
+  lines.push(bar("Attention pull",r.capture,"var(--energy)",false));
+  if(r.capture>.35) lines.push(`<p>${f.lyrics>.4?"Clear lyrics compete with reading and writing for the same language circuits.":"Sudden swings keep grabbing attention."} This hurts focus work more than other goals.</p>`);
+  lines.push(bar("Absorption",r.absorb,"var(--absorb)",false));
+  if(r.absorb>.45) lines.push(`<p>Enough level, smooth attacks and felt bass to fill attention and quiet inner speech. This is where dreamy states come from.</p>`);
+  $("why").innerHTML=lines.join("");
+}
+function renderVerdict(){
+  const tr=S.tracks[S.selected];
+  if(!tr||!tr.features){$("verdictPill").textContent="";$("verdictText").textContent="";return}
+  const r=model(tr.features,S.vol,S.start); const [cls,txt]=verdictOf(r,S.vol,S.goal);
+  $("verdictPill").className="pill "+cls; $("verdictPill").textContent=txt;
+  // best volume for this track
+  let best=1,bc=1e9; for(let st=1;st<=10;st++){const c=cost(model(tr.features,st,S.start),st,S.goal);if(c<bc){bc=c;best=st}}
+  $("verdictText").textContent = best===S.vol? `Volume ${S.vol} is this track's best setting for ${GOALS[S.goal].name.toLowerCase()} from here.` : `For ${GOALS[S.goal].name.toLowerCase()} from here, this track works best around volume ${best}.`;
+}
+function mainReason(r,f,step){
+  if(r.capture>.45&&GOALS[S.goal].capturePenalty>.2) return "lyrics or swings pull attention";
+  if(r.absorb>.5) return "smooth and loud enough to absorb you";
+  if(r.load>.08) return "loudness adds tension";
+  if(r.drive>.12) return "lifts energy with steady drive";
+  if(r.drive<-.1) return "brings energy down";
+  if(r.calmOrTense<-.08) return "eases tension";
+  return "gentle nudge, little change";
+}
+function bestFor(t,start){let best=null;for(let st=1;st<=10;st++){const r=model(t.features,st,start);const c=cost(r,st,S.goal);if(!best||c<best.c)best={st,r,c}}return best}
+function renderRanking(){
+  const rows=Object.values(S.tracks).filter(t=>t.features).map(t=>({t,...bestFor(t,S.start)})).sort((a,b)=>a.c-b.c).slice(0,8);
+  if(!rows.length){$("ranking").innerHTML=`<tr><td colspan="4" class="note">No profiled tracks yet.</td></tr>`;return}
+  $("ranking").innerHTML=rows.map(({t,st,r})=>{const [cls,txt]=verdictOf(r,st,S.goal);
+    return `<tr class="click" data-id="${esc(t.id)}" data-v="${st}"><td><b style="font-weight:500">${esc(t.name)}</b><br><small style="color:var(--muted)">${esc(t.artist)}</small></td><td class="num">${st}</td><td><span class="pill ${cls}">${txt.replace("Lands ","")}</span></td><td>${mainReason(r,t.features,st)}</td></tr>`}).join("");
+}
+$("ranking").addEventListener("click",e=>{const tr=e.target.closest("tr.click");if(!tr)return;S.vol=Number(tr.dataset.v);$("vol").value=S.vol;selectTrack(tr.dataset.id)});
+function renderSequence(){
+  const tracks=Object.values(S.tracks).filter(t=>t.features);
+  if(!tracks.length){$("sequence").innerHTML="";return}
+  const single=tracks.map(t=>({t,...bestFor(t,S.start)})).sort((a,b)=>a.c-b.c)[0];
+  if(single && zoneDist(single.r.end,GOALS[S.goal])===0){$("sequence").innerHTML=`<p class="note" style="margin:0">One track is enough from here: ${esc(single.t.name)} at volume ${single.st}.</p>`;return}
+  let best=null;
+  for(const a of tracks){for(let s1=1;s1<=10;s1++){const r1=model(a.features,s1,S.start);
+    // first step should move toward the goal, not overshoot
+    for(const b of tracks){if(b.id===a.id)continue;const bb=bestFor(b,r1.end);const c=bb.c+.05*cost(r1,s1,S.goal);if(!best||c<best.c)best={a,s1,r1,b,s2:bb.st,r2:bb.r,c}}}}
+  if(!best||best.c>=single.c-.01){$("sequence").innerHTML=`<p class="note" style="margin:0">No two-track sequence in your library does better than the top single pick. A track closer to your current state would help as a bridge.</p>`;return}
+  const pct=p=>`energy ${Math.round(p.E*100)}, tension ${Math.round(p.T*100)}`;
+  $("sequence").innerHTML=`<p class="note" style="margin:0 0 4px">Match your state first, then shift. A first track close to where you are gets you to a point the second can carry into the zone.</p>
+  <div><span class="n">1</span><span><b style="font-weight:500">${esc(best.a.name)}</b> at vol ${best.s1} → ${pct(best.r1.end)}</span></div>
+  <div><span class="n">2</span><span><b style="font-weight:500">${esc(best.b.name)}</b> at vol ${best.s2} → ${pct(best.r2.end)} (${verdictOf(best.r2,best.s2,S.goal)[1].toLowerCase()})</span></div>`;
+}
+
+function renderFeat(){
+  const tr=S.tracks[S.selected];
+  if(!tr){$("feat").innerHTML="";$("featSource").textContent="Select a track.";return}
+  $("featSource").textContent = !tr.features? "No profile yet. Estimate it with Claude, or set it by ear." : tr.featuresBy==="you"? "Set by you." : "Estimated by Claude from what it knows about the track. Correct anything that feels off; your edits are kept.";
+  const f=tr.features||{bpm:100,attack:.5,density:.5,harshness:.3,unpredictability:.3,bass:.5,lyrics:.5,familiarity:.7};
+  $("feat").innerHTML=FEATS.map(([k,l,mn,mx,st])=>`<div class="slider"><label for="f_${k}">${l}</label><output>${k==="bpm"?Math.round(f[k]):Math.round(f[k]*100)}</output><input id="f_${k}" data-k="${k}" type="range" min="${mn}" max="${mx}" step="${st}" value="${f[k]}"></div>`).join("");
+}
+let featTimer=null;
+$("feat").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;const tr=S.tracks[S.selected];if(!tr)return;
+  tr.features={...(tr.features||{bpm:100,attack:.5,density:.5,harshness:.3,unpredictability:.3,bass:.5,lyrics:.5,familiarity:.7}),[k]:Number(e.target.value)};tr.featuresBy="you";
+  e.target.previousElementSibling.textContent=k==="bpm"?Math.round(tr.features[k]):Math.round(tr.features[k]*100);
+  $("featSource").textContent="Set by you.";renderAll(false);
+  clearTimeout(featTimer);featTimer=setTimeout(()=>{saveTrack(tr);renderAll(true)},700)});
+
+function renderKnobs(){
+  $("knobs").innerHTML=Object.entries(KNOB_INFO).map(([k,[l,d]])=>`<div class="slider" title="${esc(d)}"><label for="k_${k}">${l}</label><output>${S.K[k].toFixed(2)}</output><input id="k_${k}" data-k="${k}" type="range" min="0" max="1.5" step=".05" value="${S.K[k]}"><div class="ends"><span>${esc(d)}</span></div></div>`).join("");
+}
+$("knobs").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;S.K[k]=Number(e.target.value);e.target.previousElementSibling.textContent=S.K[k].toFixed(2);renderAll(true)});
+$("saveKnobs").addEventListener("click",async()=>{if(!db){$("knobStatus").textContent="Saving needs the page's storage, which isn't available here.";return}
+  try{await db.doc("settings/model").set({K:S.K,settings:S.settings});$("knobStatus").textContent="Saved"}catch(e){$("knobStatus").textContent="Could not save: "+(e.code||"error")}});
+$("resetKnobs").addEventListener("click",()=>{S.K={...DEFAULT_K};renderKnobs();renderAll(true)});
+
+function renderLogs(){
+  const ls=[...S.logs].sort((a,b)=>b.ts-a.ts).slice(0,12);
+  if(!ls.length){$("logs").innerHTML=`<tr><td colspan="4" class="note">No logs yet. Your first one appears here and on the map in green.</td></tr>`;$("calib").textContent="";return}
+  $("logs").innerHTML=ls.map(l=>{const err=Math.hypot(l.pred.E-l.end.E,l.pred.T-l.end.T);
+    return `<tr><td class="num">${new Date(l.ts).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</td><td>${esc(l.trackName)}</td><td class="num">${l.vol}</td><td class="num">E ${Math.round(l.pred.E*100)}→${Math.round(l.end.E*100)} · T ${Math.round(l.pred.T*100)}→${Math.round(l.end.T*100)} <span style="color:var(--muted)">(off by ${Math.round(err*100)})</span></td></tr>`}).join("");
+  const all=S.logs; const bE=all.reduce((a,l)=>a+(l.end.E-l.pred.E),0)/all.length, bT=all.reduce((a,l)=>a+(l.end.T-l.pred.T),0)/all.length;
+  $("calib").textContent = all.length<3? `${all.length} log${all.length>1?"s":""} so far. After about 10 you can see whether the model is systematically off.` :
+    `Across ${all.length} logs, you actually land ${Math.abs(Math.round(bE*100))} points ${bE>=0?"more":"less"} energetic and ${Math.abs(Math.round(bT*100))} points ${bT>=0?"more":"less"} tense than predicted. ${Math.abs(bT)>.08?(bT>0?"Try raising Loudness load or Tension pull.":"Try lowering Loudness load or Mismatch irritation."):""} ${Math.abs(bE)>.08?(bE>0?"Try raising Energy pull.":"Try lowering Energy pull."):""}`;
+}
+$("logBtn").addEventListener("click",async()=>{
+  const tr=S.tracks[S.selected]; if(!tr||!tr.features){$("logStatus").textContent="Pick a track first.";return}
+  const pred=model(tr.features,S.vol,S.start).end;
+  const entry={ts:Date.now(),trackId:tr.id,trackName:tr.name,vol:S.vol,goal:S.goal,start:{...S.start},end:{E:$("endE").value/100,T:$("endT").value/100},focus:Number($("focus").value),pred,features:tr.features};
+  if(!db){$("logStatus").className="status err";$("logStatus").textContent="Storage isn't available in this view, so the log can't be kept.";return}
+  $("logBtn").disabled=true;
+  try{await db.collection("logs").add(entry);$("logStatus").className="status";$("logStatus").textContent="Saved"}
+  catch(e){$("logStatus").className="status err";$("logStatus").textContent=e.code==="quota_exceeded"?"Storage is full.":"Could not save. Try again."}
+  finally{$("logBtn").disabled=false}
+});
+
+// ---------- persistence ----------
+async function saveTrack(t){ if(!db) return; try{ await db.doc("tracks/"+t.id).set(JSON.parse(JSON.stringify(t))) }catch(e){ $("syncStatus").className="status err"; $("syncStatus").textContent="Could not save track changes." } }
+async function savePlaylist(p){ if(!db) return; try{ await db.doc("playlists/"+p.id).set(p) }catch{} }
+
+// ---------- Spotify ----------
+function parseEntities(res){
+  let p=res?.payload; if(typeof p==="string"){try{p=JSON.parse(p)}catch{p=null}}
+  if(!p && res?.content?.[0]?.text){try{p=JSON.parse(res.content[0].text)}catch{}}
+  return Array.isArray(p?.entities)?p.entities:[];
+}
+function coverOf(e){const c=e?.display?.covers||[];return (c.find(x=>x.size==="DEFAULT")||c[0]||{}).url||""}
+function trackFromEntity(e,source){
+  const id=(e.uri||"").split(":").pop();
+  return {id,uri:e.uri,name:e.name,artist:(e.creators||[]).map(c=>c.name).join(", "),album:e.parent?.name||"",url:(e.url||"").split("?")[0],albumKey:albumKeysOf(coverOf(e))[0]||null,sources:[source]};
+}
+const spotifyErr = code=>({
+  needs_reauth:"Reconnect Spotify in claude.ai Settings → Connectors, then sync again.",
+  server_not_connected:"Add the Spotify connector in claude.ai Settings → Connectors, then sync again.",
+  selection_required:"Choose which Spotify connector this page should use when claude.ai asks, then sync again.",
+  not_in_manifest:"Spotify isn't allowed for this page. Allow it from the page's Permissions menu.",
+  approval_required:"Spotify access needs your approval. Press Sync again and allow it.",
+  server_unavailable:"Spotify isn't answering right now. Try again in a minute.",
+  blocked_by_policy:"Your organization blocks this Spotify tool."
+}[code]||"Spotify request failed. Try again.");
+async function spotify(prompt,limit=20){
+  const res=await mcp.callTool("Spotify","search",{prompt,language:(navigator.language||"en-US"),limit});
+  return parseEntities(res);
+}
+$("syncBtn").addEventListener("click",async()=>{
+  const st=$("syncStatus"); st.className="status";
+  if(!mcp){st.className="status err";st.textContent="Spotify can only be reached when this page is open in claude.ai.";return}
+  $("syncBtn").disabled=true; st.textContent="Reading your playlists…";
+  try{
+    const pl=await spotify("my playlists");
+    for(const e of pl){ if(e.entity_type!=="COLLECTION"||!(e.uri||"").includes(":playlist:")||e.name==="Liked Songs") continue;
+      const id=e.uri.split(":").pop(); const own=!!e.can_edit_items;
+      const p={id,uri:e.uri,name:e.name,url:(e.url||"").split("?")[0],own,albumKeys:albumKeysOf(coverOf(e)).concat(albumKeysOf((e.display?.covers||[])[0]?.url))};
+      p.albumKeys=[...new Set(p.albumKeys)];
+      S.playlists[id]=p; await savePlaylist(p) }
+    st.textContent="Reading most played and recent tracks…";
+    const added=[];
+    for(const [q,src] of [["my most played tracks","top"],["my recently played tracks","recent"]]){
+      const ents=await spotify(q);
+      for(const e of ents){ if(e.entity_type!=="MUSIC"||!(e.uri||"").includes(":track:")) continue;
+        const t=trackFromEntity(e,src); const ex=S.tracks[t.id];
+        if(ex){ if(!ex.sources.includes(src)){ex.sources=[...ex.sources,src];await saveTrack(ex)} }
+        else { S.tracks[t.id]=t; added.push(t); await saveTrack(t) } }
+    }
+    renderFilter();renderTracks();renderPlaylists();
+    const missing=Object.values(S.tracks).filter(t=>!t.features);
+    if(missing.length){ st.textContent=`Found ${added.length} new track${added.length===1?"":"s"}. Profiling ${missing.length}…`; await estimate(missing); }
+    st.textContent=`Synced ${Object.keys(S.playlists).length} playlists. ${added.length} new track${added.length===1?"":"s"}.`;
+  }catch(e){ st.className="status err"; st.textContent=spotifyErr(e?.code) }
+  finally{ $("syncBtn").disabled=false }
+});
+$("qBtn").addEventListener("click",doSearch);
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter")doSearch()});
+async function doSearch(){
+  const q=$("q").value.trim(); if(!q) return;
+  if(!mcp){$("results").innerHTML=`<p class="status err">Spotify can only be reached when this page is open in claude.ai.</p>`;return}
+  $("results").innerHTML=`<p class="status">Searching…</p>`;
+  try{
+    const ents=(await spotify(q,8)).filter(e=>e.entity_type==="MUSIC"&&(e.uri||"").includes(":track:"));
+    if(!ents.length){$("results").innerHTML=`<p class="status">No tracks found.</p>`;return}
+    const plOpts=Object.values(S.playlists).filter(p=>p.own).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+    $("results").innerHTML=`<label class="note">Tag new tracks with playlist <select id="tagPl"><option value="">none</option>${plOpts}</select></label>`+
+      ents.map((e,i)=>`<button data-i="${i}">${esc(e.name)} <span style="color:var(--muted)">· ${esc((e.creators||[]).map(c=>c.name).join(", "))}</span></button>`).join("");
+    $("results").onclick=async ev=>{const b=ev.target.closest("button[data-i]");if(!b)return;const e=ents[b.dataset.i];
+      const t=S.tracks[(e.uri||"").split(":").pop()]||trackFromEntity(e,"added");
+      if(!t.sources.includes("added")) t.sources=[...t.sources,"added"];
+      const pl=$("tagPl").value; if(pl) t.playlists=[...new Set([...(t.playlists||[]),pl])];
+      S.tracks[t.id]=t; await saveTrack(t); $("results").innerHTML=""; $("q").value="";
+      renderFilter(); selectTrack(t.id); if(!t.features) estimate([t]) };
+  }catch(e){$("results").innerHTML=`<p class="status err">${esc(spotifyErr(e?.code))}</p>`}
+}
+
+// ---------- Claude estimation ----------
+async function estimate(list){
+  const st=$("estStatus");
+  if(!sample){st.className="status err";st.textContent="Estimating needs Claude, which isn't available in this view. Set the sliders by ear.";return}
+  st.className="status";st.textContent="Asking Claude…";
+  const items=list.slice(0,25).map(t=>({id:t.id,name:t.name,artist:t.artist,album:t.album}));
+  const prompt=`For each track below, estimate its acoustic character from what you know of the recording. Reply with only a JSON array of objects:
+{"id": string, "bpm": number, "attack": 0-1, "density": 0-1, "harshness": 0-1, "unpredictability": 0-1, "bass": 0-1, "lyrics": 0-1}
+Definitions: attack = how sharp and frequent the transients are (drums, picked distortion); density = how full the arrangement is; harshness = distortion, dissonance and aggressive upper treble; unpredictability = sudden loudness swings and surprises (big crescendos, drops); bass = felt low-frequency weight; lyrics = how much of the track is intelligible sung or spoken words (wordless vocals, chants or throat singing count low).
+Example: {"id":"x","bpm":138,"attack":0.85,"density":0.8,"harshness":0.75,"unpredictability":0.25,"bass":0.6,"lyrics":0.7}
+Tracks:
+${JSON.stringify(items)}`;
+  try{
+    const out=await sample.json(prompt,{modelTier:"default"});
+    let n=0;
+    for(const o of (Array.isArray(out)?out:[])){const t=S.tracks[o?.id];if(!t||t.featuresBy==="you")continue;
+      const num=(x,d)=>Number.isFinite(Number(x))?Number(x):d;
+      t.features={bpm:clamp(num(o.bpm,100),40,200),attack:clamp(num(o.attack,.5)),density:clamp(num(o.density,.5)),harshness:clamp(num(o.harshness,.3)),unpredictability:clamp(num(o.unpredictability,.3)),bass:clamp(num(o.bass,.5)),lyrics:clamp(num(o.lyrics,.5)),familiarity:t.features?.familiarity??.7};
+      t.featuresBy="claude"; n++; await saveTrack(t)}
+    st.textContent=`Profiled ${n} track${n===1?"":"s"}.`;
+    renderTracks();renderFeat();renderAll(true);
+  }catch(e){st.className="status err";st.textContent=({not_granted:"Claude access was declined for this page.",rate_limited:"Too many requests. Try again later.",invalid_json:"Claude's answer couldn't be read. Try again.",sampling_disabled:"Claude isn't available for this account."}[e?.code]||"Estimate failed. Try again.")}
+}
+$("estBtn").addEventListener("click",()=>{const t=S.tracks[S.selected];if(!t)return;if(t.featuresBy==="you")t.featuresBy="claude";estimate([t])});
+
+// ---------- inputs ----------
+const bindOut=(id,fmt)=>{const el=$(id);const o=$(id+"o");const f=()=>o.textContent=fmt(Number(el.value));el.addEventListener("input",f);f()};
+bindOut("startE",v=>v);bindOut("startT",v=>v);bindOut("endE",v=>v);bindOut("endT",v=>v);bindOut("focus",v=>v+" / 5");bindOut("vol",v=>"step "+v);
+$("startE").addEventListener("input",e=>{S.start.E=e.target.value/100;renderAll(false)});
+$("startT").addEventListener("input",e=>{S.start.T=e.target.value/100;renderAll(false)});
+["startE","startT"].forEach(id=>$(id).addEventListener("change",()=>renderAll(true)));
+$("vol").addEventListener("input",e=>{S.vol=Number(e.target.value);renderAll(false);renderSafety()});
+$("vol").addEventListener("change",()=>renderAll(true));
+
+function renderAll(heavy){
+  $("startEo").textContent=Math.round(S.start.E*100);$("startTo").textContent=Math.round(S.start.T*100);
+  drawMap();renderWhy();renderVerdict();renderSafety();
+  if(heavy){renderRanking();renderSequence();renderPlaylists()}
+}
+
+// ---------- boot ----------
+renderGoals();renderKnobs();renderFilter();renderTracks();renderFeat();renderLogs();renderAll(true);
+(async()=>{
+  const C=window.claude; if(!C?.use) return;
+  [db,mcp,sample]=await Promise.all([C.use("db"),C.use("mcp"),C.use("sample")]);
+  if(!db){$("syncStatus").textContent="Storage isn't available in this view; changes won't be kept.";return}
+  let loaded=false; const timer=setTimeout(()=>{if(!loaded)$("syncStatus").textContent="Still loading your library…"},10000);
+  const onErr=()=>{clearTimeout(timer);$("syncStatus").className="status err";$("syncStatus").textContent="Your saved library can't be reached right now."};
+  db.collection("tracks").onSnapshot(s=>{loaded=true;clearTimeout(timer);
+    for(const ch of s.docChanges()){const d=ch.doc.data();if(ch.type==="removed")delete S.tracks[ch.doc.id];else S.tracks[ch.doc.id]={...JSON.parse(JSON.stringify(d)),id:ch.doc.id}}
+    if(!S.selected||!S.tracks[S.selected]){const first=Object.values(S.tracks).find(t=>t.features);if(first)S.selected=first.id}
+    if(!s.metadata.fromCache && $("syncStatus").textContent.startsWith("Still"))$("syncStatus").textContent="";
+    renderFilter();renderTracks();renderFeat();renderAll(true)},onErr);
+  db.collection("playlists").onSnapshot(s=>{S.playlists={};for(const d of s.docs)S.playlists[d.id]={...JSON.parse(JSON.stringify(d.data())),id:d.id};renderFilter();renderPlaylists()},onErr);
+  db.collection("logs").onSnapshot(s=>{S.logs=s.docs.map(d=>d.data());renderLogs();drawMap()},onErr);
+  try{const m=await db.doc("settings/model").get();if(m.exists){const d=m.data();if(d.K)S.K={...DEFAULT_K,...d.K};if(d.settings)S.settings={...S.settings,...d.settings};renderKnobs();renderAll(true)}}catch{}
+})();
+})();
+</script>
+
+

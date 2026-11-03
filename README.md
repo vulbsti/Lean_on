@@ -6,6 +6,22 @@ utkarsh's skills, and what we've learned building them.
 
 - `skills/<name>/SKILL.md`: one folder per skill, in the standard SKILL.md format (frontmatter `name` and `description`, then the instructions).
 - `learnings/`: what we found while building and testing the skills, such as diagnoses, test plans and results.
+- `plugins/<name>/`: installable Claude plugins, listed in the marketplace file `.claude-plugin/marketplace.json`.
+
+## Plugins
+
+| Plugin | Use it for |
+| --- | --- |
+| [listening-state-map](plugins/listening-state-map) | Seeing how a track at a given volume moves your energy and tension from where you start, syncing Spotify, and logging what actually happened to calibrate the model |
+
+Install in claude.ai, the desktop app or Cowork: Customize → Plugins → Add → Add marketplace, enter `vulbsti/Lean_on`, then install **listening-state-map**.
+
+Install in Claude Code:
+
+```
+/plugin marketplace add vulbsti/Lean_on
+/plugin install listening-state-map@lean-on
+```
 
 ## Skills
 
