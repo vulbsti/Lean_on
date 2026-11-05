@@ -28,7 +28,7 @@ Its proposed mechanism was that uncertainty and obstacles make compelling storie
 
 The revision's strongest objection also changed the question. Perhaps people understand the limits of initial attraction and knowingly value immediate experience. If so, the apparent mistake may be a trade-off between preferences at different times rather than cultural deception. An objection earned its place by changing the explanation.
 
-The final response named the process **Observation → Hypothesis → Mechanism → Investigation → Synthesis**, expanded into finding the problem, forming a risky hypothesis, explaining the mechanism, constructing the argument, attacking the hypothesis, and compressing the draft.
+The final response named the process **Observation → Hypothesis → Mechanism → Investigation → Synthesis**, expanded into finding the problem, forming a risky hypothesis, explaining the mechanism, constructing the argument, attacking the hypothesis, and compressing the draft. In the follow-up on this skill, the user emphasized the essay's reason to exist and the paragraph-removal test, and clarified that this should be a framework for thinking rather than a template. These govern the skill: its sections describe available thinking moves, not required stages or an output shape.
 
 ## Limits to preserve
 

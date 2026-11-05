@@ -5,13 +5,21 @@ description: Develop rough observations into essays with a non-obvious question,
 
 # Essay investigation
 
-An essay should leave the reader understanding something they could not get from the original observations alone. Organizing related ideas is only preparation. Find the problem they illuminate, investigate possible explanations, and let the investigation change the conclusion.
+**Most importantly, the essay should have a reason to exist.** It should leave the reader understanding something they could not get from the original observations alone. Organizing related ideas is only preparation. Find the problem they illuminate, investigate possible explanations, and let the investigation change the conclusion.
 
-Use **Observation → Hypothesis → Mechanism → Investigation → Synthesis** as a thinking and research process. These are not required headings, a fixed sequence of sections, or a formula for making every essay sound alike. Adapt the process to the requested scope, audience, and available evidence. An outline request needs an argument in outline form; a research request needs useful research; an essay request needs the finished essay.
+Use **Observation → Hypothesis → Mechanism → Investigation → Synthesis** as a framework for thinking. The arrows describe relationships to investigate, not a prescribed order of work or a sequence of sections. Move back and forth: an objection may change the question, evidence may overturn the hypothesis, and drafting may expose a missing mechanism. Enter wherever the material needs attention. Do not invent a hypothesis, objection, example, or synthesis merely to fill a slot. The essay's form should emerge from what the reader needs to understand.
+
+The sections below offer ways to think through weaknesses in the work; they are not steps to complete. Adapt them to the requested scope, audience, and available evidence. An outline request needs an argument in outline form; a research request needs useful research; an essay request needs the finished essay.
+
+## Establish why this essay is worth reading
+
+Be able to say what the intended reader already understands, what this essay could change in that understanding, and why the difference matters. That is its reason to exist. A subject, an elegant distinction, a provocative title, or an instruction to cover several topics is not enough by itself. The contribution need not be unprecedented; it needs to do intellectual work for this reader.
+
+Use that purpose to choose what to investigate and what to leave out, and revisit it when the argument changes. If you cannot identify a worthwhile contribution, sharpen the question or keep investigating rather than padding familiar observations into an essay. When revising, check whether the finished essay actually delivers the contribution it appeared to promise.
 
 ## Find the intellectual problem
 
-Treat rough notes as clues, not a list of topics that all deserve a section. Distinguish in your working notes:
+Treat rough notes as clues, not a list of topics that all deserve a section. Keep these distinctions clear when working with the material; they need no mandatory worksheet or separate heading:
 
 - **Observation:** what someone noticed; it may still need verification.
 - **Hypothesis:** a possible explanation, not an established fact.
@@ -26,7 +34,7 @@ Formulate a central question and a provisional answer. Do not manufacture a surp
 
 ## Give the explanation something to risk
 
-A worthwhile hypothesis could be wrong. Identify what we would expect if it were true, what would make us doubt it, and at least one plausible competing explanation. For a conceptual argument, use counterexamples and consequences rather than pretending every question requires an experiment.
+A worthwhile hypothesis could be wrong. Ask what we would expect if it were true, what would make us doubt it, and whether a competing explanation accounts for the observations as well or better. For a conceptual argument, use counterexamples and consequences rather than pretending every question requires an experiment.
 
 Explain how the proposed effect happens. Identify the relevant actors, incentives, constraints, information, or psychological processes and connect them step by step. “Culture influences choices” names a relationship; it does not explain its operation. A possible mechanism might run from narrative incentives, through which stories circulate, to audience expectations, to choices. Each arrow is a claim that may need support.
 
@@ -70,9 +78,9 @@ Read the essay as a continuous experience, then inspect the argument's weakest i
 
 Ask of each passage: **What does the reader understand now that they did not understand before?** Cut explanations of what the intended reader already knows unless they do work in a new inference. Remove repetitive examples, decorative distinctions, and claims that sound insightful but explain nothing.
 
-Use the source framework's removal test: if deleting a paragraph does not weaken the argument, it probably does not belong. Apply judgment: a concrete opening, necessary orientation, or well-placed pause can make the reasoning intelligible. Compression means more intellectual progress per paragraph, not the fewest words or the shortest possible essay. Preserve detail where the argument needs it.
+**If removing a paragraph doesn't weaken the argument, it probably shouldn't be there.** Test this by actually considering the draft without it: what inference, evidence, necessary context, or understanding is lost? If nothing consequential is lost, cut it or merge its useful part elsewhere. A paragraph that orients the reader or makes an abstract mechanism graspable can earn its place through that contribution; “it improves the flow” should not excuse repetition. Compression means more intellectual progress per paragraph, not the fewest words or the shortest possible essay. Preserve detail where the argument needs it.
 
-Before delivery, be able to answer:
+Use these questions to locate unresolved weaknesses, returning to whichever matters:
 
 1. What non-obvious question is being investigated?
 2. What is the strongest provisional explanation?
@@ -81,6 +89,6 @@ Before delivery, be able to answer:
 5. Where could the argument fail, and did that possibility change the draft?
 6. What does the reader understand at the end that the initial observations did not already provide?
 
-These questions are preparation and revision tools, not a required preamble or checklist to attach to the essay. If the draft remains obvious or disconnected, revise the central question or explanatory model before polishing sentences.
+These questions are thinking tools, not six boxes whose completion proves the essay works. Read the whole draft to judge whether it earns the reader's attention and delivers its reason to exist. If it remains obvious or disconnected, revise the central question or explanatory model before polishing sentences.
 
 For the source comparison and its limits, read [references/source-comparison.md](references/source-comparison.md) when calibrating this skill or diagnosing a fluent draft that lacks a point.
