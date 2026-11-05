@@ -29,6 +29,7 @@ Install in Claude Code:
 | --- | --- | --- |
 | [vision-review](skills/vision-review/SKILL.md) | Building and running a reviewer that predicts the owner's verdict on any kind of work (images, film, code, writing, sound) | Being tested, round 1 done |
 | [film-review-ten-thousand-hands](skills/film-review-ten-thousand-hands/SKILL.md) | Reviewing the music film Ten Thousand Hands the way its director does. It is the specialised baseline for vision-review | Being tested, round 1 done |
+| [essay-investigation](skills/essay-investigation/SKILL.md) | Turning rough observations into essays that investigate a proposition through mechanisms, evidence, competing explanations, and an earned synthesis | Extracted from the Romantic Love Illusion chat; structure validated, writing outcomes not yet independently tested |
 
 ## Learnings
 
