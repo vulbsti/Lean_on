@@ -31,6 +31,7 @@ Install in Claude Code:
 | [film-review-ten-thousand-hands](skills/film-review-ten-thousand-hands/SKILL.md) | Reviewing the music film Ten Thousand Hands the way its director does. It is the specialised baseline for vision-review | Being tested, round 1 done |
 | [essay-investigation](skills/essay-investigation/SKILL.md) | Turning rough observations into essays that investigate a proposition through mechanisms, evidence, competing explanations, and an earned synthesis | Extracted from the Romantic Love Illusion chat; structure validated, writing outcomes not yet independently tested |
 | [mechanistic-explain](skills/mechanistic-explain/SKILL.md) | Explaining code, systems, and changes through a working mental model that resolves the reader's question and supports reasoning about changed conditions | Refined around reader understanding; structure validated, explanation outcomes not yet independently tested |
+| [inquiry-essay-claude](skills/inquiry-essay-claude/SKILL.md) | Writing essays and blog posts that read like one person thinking a question through, not a news explainer: argument as a chain of questions, first-person draft, cold read by a fresh subagent, claim check | Tested on two topics over two rounds (Opus and Sonnet); last three edits not re-tested |
 
 ## Learnings
 
