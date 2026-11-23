@@ -20,6 +20,8 @@ The repo root is also the **lean-on** plugin. It ships every skill in `skills/` 
 
 Install in claude.ai, the desktop app or Cowork: Customize → Plugins → Add → Add marketplace, enter `vulbsti/Lean_on`, then install **lean-on** (and **listening-state-map** if you want it). This syncs to Claude Code when you're signed in with the same account. Projects keep their own plugin list: turn it on under each Project's settings → Plugins.
 
+The lean-on plugin has no version number on purpose, so every commit to `main` counts as a new version. Edit a skill or lesson, push, and installed copies pick it up on their next refresh: Claude Code checks marketplaces added from claude.ai on its own, and new sessions sync at start. `listening-state-map` keeps an explicit version, so bump it when you change it.
+
 Install in Claude Code:
 
 ```
