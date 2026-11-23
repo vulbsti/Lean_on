@@ -1,0 +1,16 @@
+{
+  "description": "Points each session at the lessons folder with a single line. Lessons themselves are read on demand.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/lessons-pointer.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

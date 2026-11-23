@@ -1,0 +1,18 @@
+{
+  "name": "lean-on",
+  "description": "Utkarsh's skills plus a lessons folder of what past work taught. Lessons are not loaded automatically: each session gets one line pointing at them, and reads only the ones relevant to its work.",
+  "author": {
+    "name": "Utkarsh Gupta",
+    "url": "https://github.com/vulbsti"
+  },
+  "homepage": "https://github.com/vulbsti/Lean_on",
+  "repository": "https://github.com/vulbsti/Lean_on",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "lessons",
+    "writing",
+    "explaining",
+    "evals"
+  ]
+}
