@@ -1,6 +1,7 @@
 ---
 name: explain
 description: Explain something so the reader wants to keep reading and ends up understanding it. Use when the user asks to explain, teach, walk through, or "help me understand" code, a system, a change an agent made, or any concept; also when they say an explanation did not land.
+disable-model-invocation: true
 ---
 
 # Explain

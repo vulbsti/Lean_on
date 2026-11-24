@@ -9,13 +9,13 @@ utkarsh's skills, and what we've learned building them.
 - `lessons/`: what past work taught about working with the owner, one file per lesson, listed in `lessons/INDEX.md`. They are read when relevant, not loaded every session.
 - `plugins/<name>/`: installable Claude plugins, listed in the marketplace file `.claude-plugin/marketplace.json`.
 
-The repo root is also the **lean-on** plugin. It ships every skill in `skills/` plus a session-start hook that prints one line pointing at `lessons/`, so every session knows the lessons exist without loading them.
+The repo root is also the **lean-on** plugin. It ships every skill in `skills/` and the `lessons/` folder. Nothing loads on its own: each skill sets `disable-model-invocation: true`, so it runs only when you type its slash command (for example `/lean-on:explain`), and lessons are read only when you ask.
 
 ## Plugins
 
 | Plugin | Use it for |
 | --- | --- |
-| lean-on (repo root) | All the skills below, plus a one-line pointer to the lessons |
+| lean-on (repo root) | All the skills below as slash commands, plus the lessons folder |
 | [listening-state-map](plugins/listening-state-map) | Seeing how a track at a given volume moves your energy and tension from where you start, syncing Spotify, and logging what actually happened to calibrate the model |
 
 Install in claude.ai, the desktop app or Cowork: Customize → Plugins → Add → Add marketplace, enter `vulbsti/Lean_on`, then install **lean-on** (and **listening-state-map** if you want it). This syncs to Claude Code when you're signed in with the same account. Projects keep their own plugin list: turn it on under each Project's settings → Plugins.

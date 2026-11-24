@@ -1,6 +1,7 @@
 ---
 name: film-review-ten-thousand-hands
 description: Review story, shot lists, prompts and frames for the music film Ten Thousand Hands the way its director judges them. Use instead of a general reviewer for any review or eval work on this film.
+disable-model-invocation: true
 ---
 
 # Film review: Ten Thousand Hands

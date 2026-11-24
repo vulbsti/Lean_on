@@ -12,7 +12,7 @@
     {
       "name": "lean-on",
       "source": "./",
-      "description": "Utkarsh's skills plus a lessons folder that sessions can search when relevant (only a one-line pointer is loaded).",
+      "description": "Utkarsh's skills plus a lessons folder ; skills run only from slash commands and nothing loads automatically.",
       "category": "productivity",
       "keywords": [
         "skills",

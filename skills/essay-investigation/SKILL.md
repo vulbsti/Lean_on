@@ -1,6 +1,7 @@
 ---
 name: essay-investigation
 description: Develop rough observations into essays with a non-obvious question, a provisional explanation, explicit mechanisms, evidence, serious objections, and an earned synthesis. Use for writing or revising analytical essays and idea-led blog posts, connecting scattered notes, or compiling research toward an argument. Especially useful when a draft is clear but obvious, disconnected, or leading nowhere. Not a default structure for factual summaries, reference guides, or creative fiction.
+disable-model-invocation: true
 ---
 
 # Essay investigation

@@ -1,6 +1,7 @@
 ---
 name: investigative-essay-chatgpt
 description: Develop or revise a reflective, idea-led essay from a conversation, notes, or a draft when the author wants readers to follow a difficult question in plain language.
+disable-model-invocation: true
 ---
 
 Find the point where the author's first answer stopped satisfying them. In a conversation this often occurs after everyone seems to agree. Recover the original expectation, the observation that disturbed it, the rival explanation, and what deciding between them would change. Work privately unless the author asks to see the reasoning or outline. Ask a focused question only if the missing answer would materially change the piece.

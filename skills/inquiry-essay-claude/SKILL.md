@@ -1,6 +1,7 @@
 ---
 name: inquiry-essay-claude
 description: Write an essay, blog post or long-form piece that reads like one person thinking a question through, not like a news explainer or a content-marketing post. Use whenever the user asks for an essay, blog post, article, Substack piece or a long X post built from their notes, a brain dump or a conversation; whenever they want a chat conversation turned into something publishable; and whenever they say a draft sounds like AI, like slop, too polished, too compressed or too "newsy" and want it rewritten.
+disable-model-invocation: true
 ---
 
 # Essay

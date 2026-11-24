@@ -1,6 +1,7 @@
 ---
 name: vision-review
 description: Build and run a reviewer that judges work the way its owner would, in any medium (images, film, code, writing, sound). Use when outputs pass checks but still feel off, when setting up an eval or reviewer for subjective quality, or before iterating on creative work.
+disable-model-invocation: true
 ---
 
 # Vision review
